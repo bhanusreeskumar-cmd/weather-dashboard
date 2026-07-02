@@ -234,21 +234,6 @@ export default function App() {
                     {weather.sys?.country ? `, ${weather.sys.country}` : ''}
                   </h2>
 
-                  <p className="mt-4 text-lg font-black uppercase">
-                    {new Date().toLocaleDateString(undefined, {
-                      weekday: 'long',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </p>
-
-                  <p className="text-lg font-black uppercase">
-                    {new Date().toLocaleTimeString(undefined, {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </p>
-
                   <p
                     className={`mt-5 inline-block border-4 ${theme.border} ${
                       darkMode ? 'bg-[#dfff00] text-black' : 'bg-[#8b5cff] text-white'
