@@ -5,7 +5,7 @@ export default function App() {
   const [city, setCity] = useState('')
   const [weather, setWeather] = useState(null)
   const [forecast, setForecast] = useState([])
-  const [unit, setUnit] = useState('metric')
+  const [tempUnit, setTempUnit] = useState('celsius')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [darkMode, setDarkMode] = useState(false)
@@ -14,15 +14,23 @@ export default function App() {
 
   const API_KEY = import.meta.env.VITE_WEATHER_API_KEY
 
-  const unitSymbol = unit === 'metric' ? '°C' : '°F'
-  const windUnit = unit === 'metric' ? 'm/s' : 'mph'
+  const unitSymbol = tempUnit === 'celsius' ? '°C' : '°F'
+  const windUnit = 'm/s'
+
+  function displayTemp(tempInCelsius) {
+    if (tempUnit === 'fahrenheit') {
+      return Math.round((tempInCelsius * 9) / 5 + 32)
+    }
+
+    return Math.round(tempInCelsius)
+  }
 
   const theme = {
-    page: darkMode ? 'bg-[#06131f] text-white' : 'bg-[#fff8e8] text-black',
+    page: darkMode ? 'bg-[#000000] text-white' : 'bg-[#fff8e8] text-black',
     border: darkMode ? 'border-white' : 'border-black',
     shadow: darkMode ? 'shadow-[9px_9px_0px_#00d9ff]' : 'shadow-[9px_9px_0px_#111111]',
-    panel: darkMode ? 'bg-[#071827]' : 'bg-white',
-    input: darkMode ? 'bg-[#020b14] text-white placeholder:text-zinc-400' : 'bg-white text-black placeholder:text-zinc-500',
+    panel: darkMode ? 'bg-[#000000]' : 'bg-white',
+    input: darkMode ? 'bg-[#000000] text-white placeholder:text-zinc-400' : 'bg-white text-black placeholder:text-zinc-500',
   }
 
   async function fetchWeather(searchCity) {
@@ -34,7 +42,7 @@ export default function App() {
       setShowSuggestions(false)
 
       const weatherResponse = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${searchCity}&appid=${API_KEY}&units=${unit}`
+        `https://api.openweathermap.org/data/2.5/weather?q=${searchCity}&appid=${API_KEY}&units=metric`
       )
 
       if (!weatherResponse.ok) {
@@ -45,7 +53,7 @@ export default function App() {
       setWeather(weatherData)
 
       const forecastResponse = await fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?q=${searchCity}&appid=${API_KEY}&units=${unit}`
+        `https://api.openweathermap.org/data/2.5/forecast?q=${searchCity}&appid=${API_KEY}&units=metric`
       )
 
       if (!forecastResponse.ok) {
@@ -110,7 +118,7 @@ export default function App() {
   }
 
   function toggleUnit() {
-    setUnit(unit === 'metric' ? 'imperial' : 'metric')
+    setTempUnit(tempUnit === 'celsius' ? 'fahrenheit' : 'celsius')
   }
 
   function getWeatherIconUrl(iconCode) {
@@ -124,7 +132,7 @@ export default function App() {
       setCity(lastCity)
       fetchWeather(lastCity)
     }
-  }, [unit])
+  }, [])
 
   return (
     <main className={`min-h-screen p-4 sm:p-6 ${theme.page}`}>
@@ -156,7 +164,7 @@ export default function App() {
                 darkMode ? 'bg-[#8b5cff] text-white' : 'bg-[#8b5cff] text-white'
               } px-5 py-3 text-lg font-black uppercase ${theme.shadow} active:translate-x-1 active:translate-y-1 active:shadow-none`}
             >
-              {unit === 'metric' ? '°C' : '°F'}
+              {tempUnit === 'celsius' ? '°C' : '°F'}
             </button>
           </div>
         </header>
@@ -259,26 +267,26 @@ export default function App() {
 
                 <div className="text-left md:text-right">
                   <p className="text-8xl font-black sm:text-9xl">
-                    {Math.round(weather.main.temp)}
+                    {displayTemp(weather.main.temp)}
                     {unitSymbol}
                   </p>
 
                   <p className="mt-2 text-xl font-black uppercase">
-                    Feels like {Math.round(weather.main.feels_like)}
+                    Feels like {displayTemp(weather.main.feels_like)}
                     {unitSymbol}
                   </p>
 
                   <div
                     className={`mt-5 inline-flex gap-5 border-4 ${theme.border} ${
-                      darkMode ? 'bg-[#020b14]' : 'bg-white'
+                      darkMode ? 'bg-[#000000]' : 'bg-white'
                     } px-4 py-2 text-xl font-black`}
                   >
                     <span className="text-[#ff3fa4]">
-                      ↑ {Math.round(weather.main.temp_max)}
+                      ↑ {displayTemp(weather.main.temp_max)}
                       {unitSymbol}
                     </span>
                     <span className="text-[#00a8ff]">
-                      ↓ {Math.round(weather.main.temp_min)}
+                      ↓ {displayTemp(weather.main.temp_min)}
                       {unitSymbol}
                     </span>
                   </div>
@@ -346,6 +354,7 @@ export default function App() {
                   unitSymbol={unitSymbol}
                   darkMode={darkMode}
                   getWeatherIconUrl={getWeatherIconUrl}
+                  displayTemp={displayTemp}
                 />
               ))}
             </div>
@@ -360,7 +369,7 @@ function MetricCard({ title, value, icon, accent, darkMode }) {
   return (
     <div
       className={`relative border-4 ${
-        darkMode ? 'border-white bg-[#071827] text-white shadow-[8px_8px_0px_#ffffff]' : 'border-black bg-white text-black shadow-[8px_8px_0px_#111111]'
+        darkMode ? 'border-white bg-[#000000] text-white shadow-[8px_8px_0px_#ffffff]' : 'border-black bg-white text-black shadow-[8px_8px_0px_#111111]'
       } p-5`}
     >
       <div className="flex items-center gap-4">
@@ -385,14 +394,14 @@ function MetricCard({ title, value, icon, accent, darkMode }) {
   )
 }
 
-function ForecastCard({ day, index, unitSymbol, darkMode, getWeatherIconUrl }) {
+function ForecastCard({ day, index, unitSymbol, darkMode, getWeatherIconUrl, displayTemp }) {
   const accents = ['#ffdf00', '#dfff00', '#00d9ff', '#ff3fa4', '#ff7a00']
   const accent = accents[index % accents.length]
 
   return (
     <div
       className={`relative border-4 ${
-        darkMode ? 'border-white bg-[#020b14] text-white shadow-[7px_7px_0px_#ffffff]' : 'border-black bg-white text-black shadow-[7px_7px_0px_#111111]'
+        darkMode ? 'border-white bg-[#000000] text-white shadow-[7px_7px_0px_#ffffff]' : 'border-black bg-white text-black shadow-[7px_7px_0px_#111111]'
       } p-4 text-center`}
     >
       <p className="text-xl font-black uppercase">
@@ -408,12 +417,12 @@ function ForecastCard({ day, index, unitSymbol, darkMode, getWeatherIconUrl }) {
       />
 
       <p className="text-4xl font-black">
-        {Math.round(day.main.temp_max)}
+        {displayTemp(day.main.temp_max)}
         {unitSymbol}
       </p>
 
       <p className="mt-1 text-2xl font-black text-[#00a8ff]">
-        {Math.round(day.main.temp_min)}
+        {displayTemp(day.main.temp_min)}
         {unitSymbol}
       </p>
 
