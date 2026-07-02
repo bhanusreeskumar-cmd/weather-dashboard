@@ -335,13 +335,6 @@ export default function App() {
                 5 Day Forecast
               </h2>
 
-              <button
-                className={`self-start border-4 ${theme.border} ${
-                  darkMode ? 'bg-[#020b14] text-white' : 'bg-white text-black'
-                } px-4 py-2 font-black uppercase`}
-              >
-                View all →
-              </button>
             </div>
 
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
